@@ -37,14 +37,16 @@ body {
 .f-info-links .f-info-socials,
 .f-info-brand {
   width: 100%;
+  /* vertical-align: middle; */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.f-info-socials {
+.f-info-socials i {
   font-size: 1rem;
   margin-right: 1rem;
+  margin-top: 1rem;
 }
 .f-info {
   text-align: center;
