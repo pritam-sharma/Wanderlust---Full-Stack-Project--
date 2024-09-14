@@ -8,6 +8,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
+const { listingSchema } = require("./schema.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -34,6 +35,15 @@ app.get("/", (req, res) => {
   res.send("Hii, I am root");
 });
 
+const validateListing = (req, res, next) => {
+  let { error } = listingSchema.validate(req.body);
+  if (error) {
+    let errMsg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, errMsg);
+  } else {
+    next();
+  }
+};
 //index route
 app.get(
   "/listings",
@@ -61,11 +71,20 @@ app.get(
 //Create Route
 app.post(
   "/listings",
-  wrapAsync(async (req, res) => {
-    if (!req.body.listing) {
-      throw new ExpressError(400, "send valid data for listing");
-    }
+  validateListing,
+  wrapAsync(async (req, res, next) => {
+    //let {title,description,image,price,country,location} = req.body;
     const newListing = new Listing(req.body.listing);
+    // if (!newListing.title) {
+    //   throw new ExpressError(400, "Title is missing");
+    // }
+    // if (!newListing.description) {
+    //   throw new ExpressError(400, "description is missing");
+    // }
+    // if (!newListing.location) {
+    //   throw new ExpressError(400, "location is missing");
+    // }
+    //to replace above multiple if conditions we can use joi to validate server side schema
     await newListing.save();
     res.redirect("/listings");
   })
@@ -84,10 +103,8 @@ app.get(
 //Update Route
 app.put(
   "/listings/:id,",
+  validateListing,
   wrapAsync(async (req, res) => {
-    if (!req.body.listing) {
-      throw new ExpressError(400, "send valid data for listing");
-    }
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing });
     res.redirect(`/listings/${id}`);
@@ -95,15 +112,43 @@ app.put(
 );
 
 //Delete Route
+// app.delete(
+//   "/listings/:id",
+//   wrapAsync(async (req, res) => {
+//     let { id } = req.params;
+//     let deleteListing = await Listing.findByIdAndDelete(id);
+//     console.log(deleteListing);
+//     res.redirect("/listings");
+//   })
+// );
 app.delete(
-  "/listings/:id,",
+  "/listings/:id",
   wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let deleteListing = await Listing.findByIdAndDelete(id);
-    console.log(deleteListing);
-    res.redirect("/listings");
+    const { id } = req.params;
+
+    // Attempt to find and delete the listing
+    try {
+      const deleteListing = await Listing.findByIdAndDelete(id);
+
+      // Check if deleteListing is null (not found)
+      if (!deleteListing) {
+        console.log(`Listing with id ${id} not found`);
+        return res.status(404).send("Listing not found"); // Send a 404 status if not found
+      }
+
+      console.log(`Deleted listing:`, deleteListing);
+
+      // Redirect after successful deletion
+      res.redirect("/listings");
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+
+      // Send a 500 status code for server errors
+      res.status(500).send("Internal Server Error");
+    }
   })
 );
+
 // app.get("/testListing", async (req, res) => {
 //   let sampleListing = new Listing({
 //     title: "My New Villa",
