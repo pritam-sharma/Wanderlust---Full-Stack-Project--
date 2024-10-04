@@ -1,0 +1,196 @@
+project phase - 1
+
+Getting Started
+
+basic setup
+1. npm init - creating package.json
+2. npm i express - for routing
+3. npm i ejs - for ejs templates
+    require path and set view engine
+4. npm i mongoose - for creating Database models 
+
+
+1. Database Set Up
+Model : Listing
+
+title
+description
+image
+price
+location
+country
+
+set default image
+set : (v) => v===""?link:v
+
+initialize Database
+
+init folder stands for Database initialization
+function toLocalString : used to convert number into string with comas
+toLocalString("en-IN")
+
+2. REST Apis for CRUD
+
+EDIT 
+    GET/listings/:id/edit - edit form -> next request -> 
+    PUT/listings/:id
+
+npm i method-override : converting POST request to PUT request
+
+DELETE 
+    DELETE/listings/:id 
+
+what is EJS Mate ?
+    help to creating multiple layouts
+
+
+
+Project - Phase 2 ( Part a )
+creating review model 
+ - create one review model( reviewSchema ) in models
+ This is one to many relationship 
+
+ Create Review 
+ step - 1
+ setting up the review form 
+
+ step - 2
+ Submitting the form we have to connect from route
+
+ POST /listings/:id/reviews
+
+ ## Validations for reviews
+    validations works in two steps 
+    1. client side validations(form)
+    2. server side validations(joi)
+        joi schema
+        schema validate function
+        pass as a middleware
+
+Render Reviews on show.js page
+
+Adding Style to Review
+
+Delete Reviews - Delete button for individual review delete
+Mongo $pull operator
+$pull - The $pull operator removes from an existing array all instance of a value or values that 
+        match a specified condition.
+    
+Delete listing
+when I delete main listing review of that listing also be delete
+
+## Miscellaneous : Express Router and Cookies
+Express Router are a way to organize your Express application such that our primary app.js file does not become bloated
+        const router = express.Router() //creates new router object
+
+Restructuring Reviews
+app.use("/listings/:id/reviews",reviews);
+
+router = expres.Router({mergeParams : true});
+
+## Cookies (Web Cookies )
+    HTTP cookies are small blocks of data created by a web server while a user is browsing a
+    a website and placed on the user's computer or other divice by the user's web browser.
+
+app.get("/setcookies",(req,res) => {
+    res.cookies("greet","namaste");
+    res.cookies("origin","India");
+    res.send("We sent you a cookie!")
+})
+
+## Cookie Parser (cookie-parser package )
+
+const cokieParser = require("cookie-parser");
+app.use(cookieParser());
+
+app.get("/getcookies",(req,res) => {
+    console.dir(req.cookies);
+    res.send("got the cookies!");
+});
+
+
+app.get("/getcookies",(req,res) => {
+    let {name = "anonymous "} = req.cookies;
+    res.send(`Hi,${name}`);
+});
+
+## Signed Cookies
+send signed cookie
+app.use(cookieParser("secretcode"));
+
+app.get("/getsignedcookie",(req,res) => {
+    res.cookie("color","red",{signed : true});
+    res.send("done");
+});
+
+Verify signed cookie
+app.get("/Verify",(req,res) => {
+    res.send(req.signedCookies);
+});
+
+## What is state ?
+stateful protocol
+Stateful protocol require server to save the status and session information. 
+eg. - ftp : file transfer protocol : online money transfer
+
+stateless protocol
+stateless protocol does not require the server to retain the server information or
+eg - http cash money
+
+### Express Sessions
+An attempt to make our session stateful
+
+
+## Authentication v/s Authorization
+Authentication : Authentication is the process of verifying who someone is
+
+Authorization : Authorization is the process of verifying what specific applications,files, and data a user has access to
+
+## Storing Passwords
+we NEVER store the passwords as it is. We store their hashed form
+
+Password " helloworld " 
+Hashing function 
+how it is stored
+"936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af"
+
+## Hashing
+ for every input, there is fixed output
+ They are one-way functins, we can't get input from output
+ for a different input, there is a different output but of same length
+ Small change in input should breing large change in output
+ Hashing function : SHA-256 Hash generator - not good
+ Preffered : 
+
+ ## Salting
+ Password salting is a technique to protect passwords stored in databases by adding a 
+ string of 32 or more chareacters and then hashing them
+
+ ##Passport : passport is a authentication middleware for Node.js
+ npm i Passport
+ npm i passport-local
+ npm i passport-local-mongoose
+
+
+ ## Configuring Strategy
+ passport.initialize() : A middleware that initializes passport.
+
+ passport.session()
+ A web application needs the ability to identify users as they browse from page to page. 
+ This series of requests and responses, each associated with the same user, is known as a session.
+
+ passport.use(new LocalStrategy(User.authenticate()))
+
+ ## Signup User
+ GET /signup
+ POST /signup
+
+ ## Login User
+ GET /Login
+ POST /login
+
+ Connecting login route
+ How to check if user is logged in ?
+ req.isAuthenticated() // passport method
+
+ only those user can create listing who is isAuthenticated
