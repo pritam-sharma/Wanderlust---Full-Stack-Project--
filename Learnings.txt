@@ -194,3 +194,23 @@ how it is stored
  req.isAuthenticated() // passport method
 
  only those user can create listing who is isAuthenticated
+
+ ##Logout User
+ GET /logout
+
+ ##Login after signup functionlity
+
+ passport's login method automatically establishes a login session.
+ we can invoke login to automatically login a user
+
+ ##Listing Owner(Authorization)
+ When we deal with permission we talk about Authorization
+
+Starting with Authorization
+Delete and Edit
+1. listing owner = _id
+2. current user = _id
+
+Settitg Authorization
+For Reviews
+1. Review - author/owner/created by

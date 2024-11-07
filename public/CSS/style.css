@@ -8,6 +8,9 @@ body {
 .navbar-nav .nav-link {
   color: black !important;
 }
+.navbar-toggler .navbar-toggler-icon {
+  background-color: #222222;
+}
 .container {
   flex: 1;
 }
