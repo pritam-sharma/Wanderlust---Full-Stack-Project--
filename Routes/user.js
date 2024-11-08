@@ -15,13 +15,15 @@ router.get("/login", userController.renderLoginForm);
 
 router.post(
   "/login",
+  saveRedirectUrl,
   passport.authenticate("local", {
     failureRedirect: "/login",
     failureFlash: true,
   }),
   async (req, res) => {
     req.flash("success", "Welcome Back to Wanderlust!");
-    res.redirect("/listings");
+    const redirectUrl = res.locals.redirectUrl || "/listings";
+    res.redirect(redirectUrl);
   }
 );
 router.get("/logout", userController.logout);
