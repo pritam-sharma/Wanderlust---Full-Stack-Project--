@@ -20,6 +20,7 @@ router.post(
     failureFlash: true,
   }),
   async (req, res) => {
+    req.flash("success", "Welcome Back to Wanderlust!");
     res.redirect("/listings");
   }
 );

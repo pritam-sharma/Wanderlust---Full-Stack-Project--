@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
@@ -16,6 +15,7 @@ const User = require("./models/user.js");
 const listingRouter = require("./Routes/listing.js");
 const reviewRouter = require("./Routes/review.js");
 const userRouter = require("./Routes/user.js");
+const { isLoggedIn } = require("./middleware.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -31,13 +31,14 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
-// app.use(isLoggedIn);
-
+// View engine setup
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+app.engine("ejs", ejsMate);
+
+// Middleware setup
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
 const sessionOptions = {
@@ -51,63 +52,48 @@ const sessionOptions = {
   },
 };
 
-app.get("/", (req, res) => {
-  res.send("Hii, I am root");
-});
-
+// Session and flash middleware
 app.use(session(sessionOptions));
 app.use(flash());
 
-app.use("/", (req, res, next) => {
+// Initialize Passport and session
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// Setting up res.locals for use in templates
+app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   res.locals.currUser = req.user;
-
   next();
 });
 
-// app.get("/demouser", async (req, res) => {
-//   let fackUser = new User({
-//     email: "student@gmail.com",
-//     username: "pritamsharam",
-//   });
-// });
-
-// let registerUser = await User.register(fackUser, "hello");
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
-
+// Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+app.get("/", (req, res) => {
+  res.send("Hii, I am root");
+});
 
-// app.get("/testListing", async (req, res) => {
-//   let sampleListing = new Listing({
-//     title: "My New Villa",
-//     description: "By the beach",
-//     price: 1200,
-//     location: "Calangute,Goa",
-//     country: "India",
-//   });
-
-//   await sampleListing.save();
-//   res.send("successful testing");
-// });
-
+// Handle 404 errors
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page Not Found!"));
 });
 
+// Error handler
 app.use((err, req, res, next) => {
-  let { statusCode, message } = err;
+  const { statusCode = 500, message = "Something went wrong!" } = err;
   res.status(statusCode).render("error.ejs", { message });
   // res.status(statusCode).send(message);
 });
 
+// Start the server
 app.listen(8080, () => {
   console.log("server is listening to port 8080");
 });
