@@ -30,7 +30,7 @@ module.exports.renderLoginForm = (req, res) => {
 
 module.exports.login = async (req, res) => {
   console.log("first");
-  req.flash("success", "welcome back to wanderlust ! ");
+  req.flash("success", "welcome back to BnBbuddy ! ");
   let reddirectUrl = res.locals.reddirectUrl || "/listings";
   res.redirect(reddirectUrl);
 };

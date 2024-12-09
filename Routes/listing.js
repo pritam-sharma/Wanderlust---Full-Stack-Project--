@@ -13,6 +13,7 @@ const listingController = require("../controllers/listings.js");
 
 router.route("/").get(wrapAsync(listingController.index)).post(
   isLoggedIn,
+
   saveRedirectUrl,
   validateListing,
 

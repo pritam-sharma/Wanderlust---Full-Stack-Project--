@@ -11,18 +11,19 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.showListings = async (req, res) => {
   let { id } = req.params;
-  const listing = await Listing.findById(id);
-  // .populate({
-  //   path: "review",
-  //   populate: {
-  //     path: "author",
-  //   },
-  // })
-  // .populate("owner");
+  const listing = await Listing.findById(id)
+    .populate({
+      path: "review",
+      populate: {
+        path: "author",
+      },
+    })
+    .populate("owner");
   if (!listing) {
     req.flash("error", "Listing you requested for does not exits!");
     res.redirect("/listings");
   }
+  console.log(listing);
   res.render("listing/show.ejs", { listing });
 };
 
@@ -31,7 +32,7 @@ module.exports.createListing = async (req, res) => {
   const newListing = new Listing(req.body.listing);
   console.log(newListing);
 
-  // newListing.owner = req.user._id;
+  newListing.owner = req.user._id;
 
   // if (!newListing.title) {
   //   throw new ExpressError(400, "Title is missing");
@@ -61,7 +62,6 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateListing = async (req, res) => {
   let { id } = req.params;
-
   await Listing.findByIdAndUpdate(id, { ...req.body.listing });
   req.flash("success", "Listing Updated");
   res.redirect(`/listings/${id}`);
@@ -69,8 +69,8 @@ module.exports.updateListing = async (req, res) => {
 
 module.exports.destroyListing = async (req, res) => {
   let { id } = req.params;
+  id = id.trim();
   let deletedListing = await Listing.findByIdAndDelete(id);
-  console.log(deletedListing);
   req.flash("success", "Listing Deleted");
   res.redirect("/listings");
 };
