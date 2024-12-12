@@ -10,12 +10,15 @@ const {
   saveRedirectUrl,
 } = require("../middleware.js");
 const listingController = require("../controllers/listings.js");
+const multer = require("multer");
+const { storage } = require("../CloudConfig.js");
+const upload = multer({ storage });
 
 router.route("/").get(wrapAsync(listingController.index)).post(
   isLoggedIn,
-
+  upload.single("listing[image]"),
   saveRedirectUrl,
-  validateListing,
+  //validateListing,
 
   wrapAsync(listingController.createListing)
 );
@@ -30,7 +33,8 @@ router
   .put(
     isLoggedIn,
     isOwner,
-    validateListing,
+    upload.single("listing[image]"),
+    //validateListing,
     wrapAsync(listingController.updateListing)
   )
   .delete(wrapAsync(listingController.destroyListing));
