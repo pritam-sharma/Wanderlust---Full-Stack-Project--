@@ -45,7 +45,7 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "/public")));
 
 const store = MongoStore.create({
-  mongoUrl: process.env.DB_URL,
+  mongoUrl: dbUrl || process.env.DB_URL,
   crypto: {
     secret: process.env.SECRET,
   },
