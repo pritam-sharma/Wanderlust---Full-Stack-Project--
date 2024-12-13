@@ -68,7 +68,7 @@ app.use(express.static(path.join(__dirname, "/public")));
 // };
 
 // Session and flash middleware
-app.use(session(sessionOptions));
+// app.use(session(sessionOptions));
 app.use(flash());
 
 // Initialize Passport and session
