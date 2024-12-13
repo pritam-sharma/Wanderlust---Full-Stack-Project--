@@ -1,21 +1,22 @@
-//This file is for data initialization
-if (process.env.NODE_ENV != "production") {
-  require("dotenv").config();
-}
+// Require dotenv and specify the path to your .env file
+require("dotenv").config({ path: "../.env" });
+
 const mongoose = require("mongoose");
 const initData = require("./data.js");
 const Listing = require("../models/listing.js");
 
-//const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const dbUrl = process.env.DB_URL;
-console.log(dbUrl);
+
+if (!dbUrl) {
+  throw new Error("DB_URL is not defined in your .env file");
+}
 
 main()
   .then(() => {
-    console.log("connected to DB");
+    console.log("Connected to DB");
   })
   .catch((err) => {
-    console.log(err);
+    console.log("Error connecting to DB:", err);
   });
 
 async function main() {
@@ -29,7 +30,7 @@ const initDB = async () => {
     owner: "6730478318b01ba53496ec22",
   }));
   await Listing.insertMany(initData.data);
-  console.log("data was initialized");
+  console.log("Data was initialized");
 };
 
 initDB();
