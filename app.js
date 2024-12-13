@@ -20,7 +20,6 @@ const listingRouter = require("./Routes/listing.js");
 const reviewRouter = require("./Routes/review.js");
 const userRouter = require("./Routes/user.js");
 
-//const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const dbUrl = process.env.DB_URL;
 const { listingSchema, reviewSchema } = require("./schema.js");
 
@@ -60,7 +59,7 @@ store.on("error", () => {
   console.log("ERROR IN MONGO SESSION STORE", err);
 });
 const sessionOptions = {
-  srore,
+  store,
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
