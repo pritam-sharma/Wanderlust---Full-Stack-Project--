@@ -22,6 +22,9 @@ const userRouter = require("./Routes/user.js");
 
 //const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 const dbUrl = process.env.DB_URL;
+const { listingSchema, reviewSchema } = require("./schema.js");
+
+const Review = require("./models/review.js");
 
 main()
   .then(() => {
