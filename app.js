@@ -22,6 +22,8 @@ const userRouter = require("./Routes/user.js");
 
 const dbUrl = process.env.DB_URL;
 const { listingSchema, reviewSchema } = require("./schema.js");
+console.log("MONGO_URL:", process.env.DB_URL); // Check its value
+console.log("SECRET:", process.env.SECRET); // Check its value
 
 const Review = require("./models/review.js");
 
