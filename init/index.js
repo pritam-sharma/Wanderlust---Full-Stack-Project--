@@ -7,8 +7,6 @@ const mongoose = require("mongoose");
 const initData = require("./data.js");
 const Listing = require("../models/listing.js");
 
-const dbUrl = process.env.DB_URL;
-
 if (!dbUrl) {
   throw new Error("DB_URL is not defined in your .env file");
 }
@@ -24,6 +22,7 @@ main()
   });
 
 async function main() {
+  const dbUrl = process.env.DB_URL;
   await mongoose.connect(dbUrl);
 }
 
