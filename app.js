@@ -20,8 +20,6 @@ const listingRouter = require("./Routes/listing.js");
 const reviewRouter = require("./Routes/review.js");
 const userRouter = require("./Routes/user.js");
 
-const dbUrl = process.env.DB_URL;
-console.log(dbUrl);
 const { listingSchema, reviewSchema } = require("./schema.js");
 
 const Review = require("./models/review.js");
